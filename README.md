@@ -1,16 +1,16 @@
-[![Travis](https://img.shields.io/travis/ignicaodigitalbr/roger-rabbit.svg?style=flat-square)](https://travis-ci.org/ignicaodigitalbr/roger-rabbit/builds)
-[![Codecov](https://img.shields.io/codecov/c/github/ignicaodigitalbr/roger-rabbit.svg?style=flat-square)](https://codecov.io/gh/ignicaodigitalbr/roger-rabbit/)
-[![npm](https://img.shields.io/npm/v/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/roger-rabbit)
-[![npm](https://img.shields.io/npm/dt/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/roger-rabbit)
-
 # Roger Rabbit
+
+[![Travis](https://img.shields.io/travis/klickpages/roger-rabbit.svg?style=flat-square)](https://travis-ci.org/klickpages/roger-rabbit/builds)
+[![Codecov](https://img.shields.io/codecov/c/github/klickpages/roger-rabbit.svg?style=flat-square)](https://codecov.io/gh/klickpages/roger-rabbit/)
+[![npm](https://img.shields.io/npm/v/@klick/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klick/roger-rabbit)
+[![npm](https://img.shields.io/npm/dt/@klick/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klick/roger-rabbit)
 
 Roger Rabbit is a module that makes the process of consuming and publishing messages in message brokers easier. It is a wrapper for [amqplib](https://www.squaremobius.net/amqp.node/).
 
 ## Install
 
 ```shell
-npm install roger-rabbit --save
+npm install @klick/roger-rabbit --save
 ```
 
 ## Example
@@ -19,13 +19,19 @@ npm install roger-rabbit --save
 // broker.js
 const Broker = require('roger-rabbit');
 
-module.exports = Broker({
+const broker = Broker({
   host: 'amqp://guest:guest@localhost:5672',
-  exchange: {
-    type: 'direct',
-    name: 'exchange.name',
-  },
 });
+
+const exchanges = [
+  { name: 'user_events', type: 'direct' },
+  { name: 'repo_events', type: 'topic', options: { durable: true } },
+  { name: 'commit_events', type: 'fanout' },
+];
+
+broker.assertExchanges(exchanges);
+
+module.exports = broker;
 ```
 
 ```javascript
@@ -39,10 +45,14 @@ const queue = {
   },
 };
 
-const routingKey = 'routing.key.name';
+const bindings = [
+  { exchange: 'user_events', routingKey: 'user_events.routingKey' },
+  { exchange: 'repo_events', routingKey: 'repo_events.routingKey' },
+];
 
-broker.consume({ queue, routingKey }, (message) => {
+broker.consume({ queue, bindings }, (message) => {
   // do something
+  // return a promise or
   // throw an error to reject message
 });
 ```
@@ -52,7 +62,11 @@ broker.consume({ queue, routingKey }, (message) => {
 const broker = require('./broker');
 
 broker
-  .publish('routing.key.name', { message: 'hello world' })
+  .publish({
+    exchange: 'user_events',
+    routingKey: 'user_events.routingKey',
+    message: { message: 'hello world' },
+  })
   .then(console.log)
   .catch(console.error);
 ```
@@ -66,9 +80,6 @@ broker
 | host       | message broker connection url         | yes       | null    |
 | logger     | logger object                         | no        | console |
 | disableLog | disable log (all levels)              | no        | false   |
-| exchange   | [exchange options](#exchange-options) | no        | null    |
-| queue      | [queue options](#queue-options)       | no        | null    |
-
 
 ### Exchange options
 
@@ -85,9 +96,24 @@ broker
 | name    | queue name                                                                                                | null    |
 | options | options used in [assertQueue](http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue) | null    |
 
+### Binding options
+
+| Option     | Description      | Default |
+| -----------|------------------|---------|
+| exchange   | exchange name    | null    |
+| routingKey | routing key name | null    |
+
+### broker.assertExchanges
+
+Use `broker.assertExchanges` to create or check exchanges. It expects to receive an array of exchanges ([exchange options](#exchange-options).
+
+| Option   | Description                                               | Default |
+| ---------|-----------------------------------------------------------|---------|
+| exhanges | array of exchanges ([exchange options](#exchange-options) |[]       |
+
 ### broker.consume
 
-`broker.consume` expects to receive an object with [consumers options](#queue-options) and routing key name and callback. Example:
+`broker.consume` expects to receive an object with [queue](#queue-options) and array of [bindings](#binding-options) and callback. Example:
 
 ```javascript
 const broker = require('./broker');
@@ -99,9 +125,12 @@ const queue = {
   },
 };
 
-const routingKey = 'routing.key.name';
+const bindings = [
+  { exchange: 'user_events', routingKey: 'user_events.routingKey' },
+  { exchange: 'repo_events', routingKey: 'repo_events.routingKey' },
+];
 
-broker.consume({ queue, routingKey }, (message) => {
+broker.consume({ queue, bindings }, (message) => {
   // do something
   // throw an error to reject message
 });
@@ -109,17 +138,18 @@ broker.consume({ queue, routingKey }, (message) => {
 
 ### broker.publish
 
-`broker.publish` expects to receive routing key, message and [publish options](https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish). Example:
+`broker.publish` expects to receive exchange, routing key, message and [publish options](https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish). Example:
 
 ```javascript
-const options = {
-  persistent: true,
-  exchange: {
-    name: 'exchange.name',
-  },
-};
+const options = { persistent: true };
 
-broker.publish('routing.key', { message: 'message' }, options)
+broker
+  .publish({
+    exchange: 'user_events',
+    routingKey: 'user_events.routingKey',
+    message: { message: 'message' },
+    options,
+  })
   .then(message => /* handle success */)
   .catch(error => /* handle error */);
 ```
