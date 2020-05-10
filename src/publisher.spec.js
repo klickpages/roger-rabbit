@@ -2,7 +2,7 @@ const publisher = require('./publisher');
 const helpers = require('./modules/helpers');
 
 describe('publisher', () => {
-  let publisherOptions;
+  let options;
   let baseOptions;
   let message;
   let channel;
@@ -12,12 +12,9 @@ describe('publisher', () => {
     baseOptions = {
       host: 'host',
       disableLog: true,
-      exchange: {
-        name: 'exchange.name',
-      },
     };
 
-    publisherOptions = {};
+    options = {};
 
     message = { message: true };
 
@@ -27,17 +24,23 @@ describe('publisher', () => {
       },
     };
 
-    connection = new Promise(resolve => resolve(channel));
+    connection = Promise.resolve(channel);
   });
 
   describe('when the message was published', () => {
-    beforeEach((done) => {
+    beforeEach(async (done) => {
       channel.publish = jest.fn().mockReturnValue(true);
 
       jest.spyOn(helpers, 'log');
 
-      publisher(connection, baseOptions)('routing.key', message, publisherOptions)
-        .then(() => done());
+      await publisher(connection, baseOptions)({
+        exchange: 'exchange.name',
+        routingKey: 'routing.key',
+        message,
+        options,
+      });
+
+      done();
     });
 
     test('call channel.publish with correct params', () => {
@@ -45,23 +48,41 @@ describe('publisher', () => {
         'exchange.name',
         'routing.key',
         helpers.jsonToBuffer(message),
-        publisherOptions,
+        options,
       );
     });
 
     test('call log info', () => {
-      expect(helpers.log).toHaveBeenCalledWith('info', 'message is published', expect.any(Object));
+      expect(helpers.log).toHaveBeenCalledWith(
+        'info',
+        'message is published',
+        expect.any(Object),
+        {
+          context: 'publisher',
+          exchange: 'exchange.name',
+          routingKey: 'routing.key',
+          message,
+        },
+      );
     });
   });
 
   describe('when the message was not published', () => {
-    beforeEach((done) => {
-      channel.publish = jest.fn().mockReturnValue(false);
+    beforeEach(async (done) => {
+      try {
+        channel.publish = jest.fn().mockReturnValue(false);
 
-      jest.spyOn(helpers, 'log');
+        jest.spyOn(helpers, 'log');
 
-      publisher(connection, baseOptions)('routing.key', message, publisherOptions)
-        .catch(() => done());
+        await publisher(connection, baseOptions)({
+          exchange: 'exchange.name',
+          routingKey: 'routing.key',
+          message,
+          options,
+        });
+      } catch (error) {
+        done();
+      }
     });
 
     test('call channel.publish with correct params', () => {
@@ -69,12 +90,22 @@ describe('publisher', () => {
         'exchange.name',
         'routing.key',
         helpers.jsonToBuffer(message),
-        publisherOptions,
+        options,
       );
     });
 
     test('call log error', () => {
-      expect(helpers.log).toHaveBeenCalledWith('error', 'Message can not be published', expect.any(Object));
+      expect(helpers.log).toHaveBeenCalledWith(
+        'error',
+        'Message can not be published',
+        expect.any(Object),
+        {
+          context: 'publisher',
+          exchange: 'exchange.name',
+          routingKey: 'routing.key',
+          message,
+        },
+      );
     });
   });
 });

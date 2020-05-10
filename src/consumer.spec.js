@@ -10,16 +10,13 @@ describe('consumer', () => {
   let callback;
 
   beforeEach((done) => {
-    const assertExchange = jest.fn();
     const assertQueue = jest.fn();
     const bindQueue = jest.fn();
 
-    assertExchange.mockReturnValue(new Promise(resolve => resolve()));
-    assertQueue.mockReturnValue(new Promise(resolve => resolve()));
-    bindQueue.mockReturnValue(new Promise(resolve => resolve()));
+    assertQueue.mockReturnValue(Promise.resolve());
+    bindQueue.mockReturnValue(Promise.resolve());
 
     channel = {
-      assertExchange,
       assertQueue,
       bindQueue,
       prefetch: jest.fn(),
@@ -30,7 +27,10 @@ describe('consumer', () => {
         name: 'queue.name',
         options: {},
       },
-      routingKey: 'routing.key',
+      bindings: [
+        { exchange: 'user_events', routingKey: 'user_events.routingKey' },
+        { exchange: 'repo_events', routingKey: 'repo_events.routingKey' },
+      ],
     };
 
     baseOptions = {
@@ -42,7 +42,7 @@ describe('consumer', () => {
       },
     };
 
-    connection = new Promise(resolve => resolve(channel));
+    connection = Promise.resolve(channel);
 
     callback = jest.fn();
 
@@ -51,19 +51,27 @@ describe('consumer', () => {
     consumer(connection, baseOptions)(consumerOptions, callback).then(() => done());
   });
 
-  test('call channel.assertExchange', () => {
-    expect(channel.assertExchange).toHaveBeenCalledWith('exchange.name', 'topic', {});
-  });
-
   test('call channel.assertQueue', () => {
     expect(channel.assertQueue).toHaveBeenCalledWith('queue.name', {});
   });
 
-  test('call channel.bindQueue', () => {
-    expect(channel.bindQueue).toHaveBeenCalledWith('queue.name', 'exchange.name', 'routing.key');
+  test('call channel.bindQueue two times', () => {
+    expect(channel.bindQueue).toHaveBeenCalledTimes(2);
+  });
+
+  test('call channel.bindQueue with first binding options', () => {
+    expect(channel.bindQueue).toHaveBeenCalledWith('queue.name', 'user_events', 'user_events.routingKey');
+  });
+
+  test('call channel.bindQueue with second binding options', () => {
+    expect(channel.bindQueue).toHaveBeenCalledWith('queue.name', 'repo_events', 'repo_events.routingKey');
   });
 
   test('call consume', () => {
-    expect(channelModule.consume).toHaveBeenCalledWith(defaultsDeep({}, baseOptions, consumerOptions, { context: 'consumer' }), expect.any(Object), callback);
+    expect(channelModule.consume).toHaveBeenCalledWith(
+      defaultsDeep({}, baseOptions, consumerOptions, { context: 'consumer' }),
+      expect.any(Object),
+      callback,
+    );
   });
 });

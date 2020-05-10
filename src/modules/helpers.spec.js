@@ -33,9 +33,6 @@ describe('modules/helpers', () => {
     beforeEach(() => {
       options = {
         logger: console,
-        queue: {},
-        context: '',
-        message: '',
       };
     });
 
@@ -45,13 +42,11 @@ describe('modules/helpers', () => {
 
         jest.spyOn(console, 'info').mockImplementation(() => {});
 
-        log('info', 'message', options);
+        log('info', 'message', options, { message: '', context: '' });
       });
 
       test('call logger with message and metadata', () => {
-        const metadata = { queue: {}, message: '', context: '' };
-
-        expect(console.info).toHaveBeenCalledWith('message', { metadata });
+        expect(console.info).toHaveBeenCalledWith('message', { message: '', context: '' });
       });
     });
 

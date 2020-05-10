@@ -1,20 +1,23 @@
 const { defaultsDeep } = require('lodash');
 const channelModule = require('./modules/channel');
 
-module.exports = (connection, baseOptions) => (consumerOptions, callback) => {
+module.exports = (connection, baseOptions) => async (consumerOptions, callback) => {
   const options = defaultsDeep({}, baseOptions, consumerOptions, { context: 'consumer' });
   const {
-    exchange,
-    queue,
-    routingKey,
+    bindings = [],
     prefetch,
+    queue,
   } = options;
 
-  const consume = channel => channel.assertExchange(exchange.name, exchange.type, exchange.options)
-    .then(() => channel.assertQueue(queue.name, queue.options))
-    .then(() => channel.bindQueue(queue.name, exchange.name, routingKey))
-    .then(() => channel.prefetch(parseInt(prefetch, 10) || 1))
-    .then(() => channelModule.consume(options, channel, callback));
+  const channel = await connection;
 
-  return connection.then(consume);
+  await channel.assertQueue(queue.name, queue.options);
+  await Promise.all(bindings.map((binding) => {
+    const { exchange, routingKey } = binding;
+
+    return channel.bindQueue(queue.name, exchange, routingKey);
+  }));
+  await channel.prefetch(parseInt(prefetch, 10) || 1);
+
+  return channelModule.consume(options, channel, callback);
 };

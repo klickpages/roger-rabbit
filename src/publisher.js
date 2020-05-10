@@ -1,24 +1,32 @@
-const { defaultsDeep } = require('lodash');
 const helpers = require('./modules/helpers');
 
-module.exports = (connection, baseOptions) => (routingKey, message, publisherOptions = {}) => {
-  const context = 'publisher';
-  const content = helpers.jsonToBuffer(message);
-  const options = defaultsDeep({}, baseOptions, { context, message }, publisherOptions);
-  const { exchange } = options;
+module.exports = (connection, baseOptions) => (
+  async ({
+    exchange = '',
+    routingKey = '',
+    message = {},
+    options = {},
+  }) => {
+    const context = 'publisher';
+    const content = helpers.jsonToBuffer(message);
+    const metadata = {
+      context,
+      message,
+      exchange,
+      routingKey,
+    };
+    const channel = await connection;
 
-  const publish = (channel) => {
-    const published = channel.publish(exchange.name, routingKey, content, publisherOptions);
+    const published = channel.publish(exchange, routingKey, content, options);
 
-    if (published) {
-      helpers.log('info', 'message is published', options);
-      return message;
+    if (!published) {
+      helpers.log('error', 'Message can not be published', baseOptions, metadata);
+
+      throw Error('Message can not be published');
     }
 
-    helpers.log('error', 'Message can not be published', options);
+    helpers.log('info', 'message is published', baseOptions, metadata);
 
-    throw Error('Message can not be published');
-  };
-
-  return connection.then(publish);
-};
+    return message;
+  }
+);

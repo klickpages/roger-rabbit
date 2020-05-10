@@ -21,6 +21,10 @@ describe('modules/channel', () => {
       };
     });
 
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
     test('call channel.consume with queue name', () => {
       consume(options, channel);
 
@@ -48,14 +52,12 @@ describe('modules/channel', () => {
         });
 
         test('log that the message was consumed', () => {
-          expect(helpers.log).toHaveBeenCalledWith('info', 'message was consumed', {
-            queue: {
-              name: 'queue.name',
-            },
-            message: {
-              message: 'message',
-            },
-          });
+          expect(helpers.log).toHaveBeenCalledWith(
+            'info',
+            'message was consumed',
+            options,
+            { context: 'consumer', queue: 'queue.name', message: { message: 'message' } },
+          );
         });
 
         test('return the parsed message', () => {
@@ -75,7 +77,12 @@ describe('modules/channel', () => {
         });
 
         test('log that the message was not consumed', () => {
-          expect(helpers.log).toHaveBeenCalledWith('error', 'message error', options);
+          expect(helpers.log).toHaveBeenCalledWith(
+            'error',
+            'message error',
+            options,
+            { context: 'consumer', queue: 'queue.name', message: { message: 'message' } },
+          );
         });
 
         test('call channel.reject with received message', () => {
@@ -86,15 +93,25 @@ describe('modules/channel', () => {
 
     describe('when the message can not be parsed', () => {
       beforeEach(() => {
-        channel.consume = (queueName, callback) => callback(receivedMessage);
+        receivedMessage = {
+          content: null,
+        };
+
+        channel.consume = (_, callback) => callback(receivedMessage);
 
         jest.spyOn(helpers, 'log').mockImplementation(() => {});
+        jest.spyOn(helpers, 'bufferToJson').mockImplementation(() => { throw Error('message error'); });
 
-        consume(options, channel, () => { throw Error('message error'); });
+        consume(options, channel, () => jest.fn());
       });
 
       test('log that the message was not consumed', () => {
-        expect(helpers.log).toHaveBeenCalledWith('error', 'message error', options);
+        expect(helpers.log).toHaveBeenCalledWith(
+          'error',
+          'message error',
+          options,
+          { context: 'consumer', queue: 'queue.name' },
+        );
       });
 
       test('call channel.reject with received message', () => {

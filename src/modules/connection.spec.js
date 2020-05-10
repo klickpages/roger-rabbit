@@ -42,7 +42,7 @@ describe('modules/connection', () => {
       });
     });
 
-    describe('when connection is created', () => {
+    describe('when connection is not created', () => {
       let options;
       let error;
 

@@ -4,12 +4,9 @@ Module.jsonToBuffer = message => Buffer.from(JSON.stringify(message));
 
 Module.bufferToJson = buffer => JSON.parse(buffer.toString());
 
-Module.log = (level, logMessage, options) => {
-  const { queue, context, message } = options;
-  const metadata = { queue, context, message };
-
+Module.log = (level, logMessage, options, metadata) => {
   if (!options.disableLog) {
-    options.logger[level](logMessage, { metadata });
+    options.logger[level](logMessage, metadata);
   }
 };
 
