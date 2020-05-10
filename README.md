@@ -2,15 +2,15 @@
 
 [![Travis](https://img.shields.io/travis/klickpages/roger-rabbit.svg?style=flat-square)](https://travis-ci.org/klickpages/roger-rabbit/builds)
 [![Codecov](https://img.shields.io/codecov/c/github/klickpages/roger-rabbit.svg?style=flat-square)](https://codecov.io/gh/klickpages/roger-rabbit/)
-[![npm](https://img.shields.io/npm/v/@klick/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klick/roger-rabbit)
-[![npm](https://img.shields.io/npm/dt/@klick/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klick/roger-rabbit)
+[![npm](https://img.shields.io/npm/v/@klicksite/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klicksite/roger-rabbit)
+[![npm](https://img.shields.io/npm/dt/@klicksite/roger-rabbit.svg?style=flat-square)](https://www.npmjs.com/package/@klicksite/roger-rabbit)
 
 Roger Rabbit is a module that makes the process of consuming and publishing messages in message brokers easier. It is a wrapper for [amqplib](https://www.squaremobius.net/amqp.node/).
 
 ## Install
 
 ```shell
-npm install @klick/roger-rabbit --save
+npm install @klicksite/roger-rabbit --save
 ```
 
 ## Example

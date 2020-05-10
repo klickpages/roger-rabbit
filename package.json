@@ -1,8 +1,9 @@
 {
-  "name": "@klick/roger-rabbit",
+  "name": "@klicksite/roger-rabbit",
   "version": "3.0.0",
   "description": "amqplib wrapper",
   "main": "index.js",
+  "private": false,
   "scripts": {
     "test": "npm run lint && npm run unit",
     "unit": "NODE_ENV=test jest",
@@ -10,19 +11,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ignicaodigitalbr/roger-rabbit.git"
+    "url": "git+https://github.com/klickpages/roger-rabbit.git"
   },
   "keywords": [
     "amqp",
     "broker",
     "rabbitmq"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Klickpages <accounts@klickpages.com.br>",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ignicaodigitalbr/roger-rabbit/issues"
+    "url": "https://github.com/klickpages/roger-rabbit/issues"
   },
-  "homepage": "https://github.com/ignicaodigitalbr/roger-rabbit#readme",
+  "homepage": "https://github.com/klickpages/roger-rabbit#readme",
   "dependencies": {
     "amqplib": "^0.5.2",
     "lodash": "^4.17.11"
