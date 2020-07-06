@@ -23,14 +23,6 @@ const broker = Broker({
   host: 'amqp://guest:guest@localhost:5672',
 });
 
-const exchanges = [
-  { name: 'user_events', type: 'direct' },
-  { name: 'repo_events', type: 'topic', options: { durable: true } },
-  { name: 'commit_events', type: 'fanout' },
-];
-
-broker.assertExchanges(exchanges);
-
 module.exports = broker;
 ```
 
@@ -73,43 +65,32 @@ broker
 
 ## Documentation
 
-### Broker
-
-| Option     | Description                           | Required  | Default |
-| -----------|---------------------------------------|-----------|---------|
-| host       | message broker connection url         | yes       | null    |
-| logger     | logger object                         | no        | console |
-| disableLog | disable log (all levels)              | no        | false   |
-
-### Exchange options
-
-| Option  | Description                                                                                                     | Default                 |
-| --------|-----------------------------------------------------------------------------------------------------------------|-------------------------|
-| type    | direct, topic, fanout                                                                                           | empty string (deafault) |
-| name    | exchange name                                                                                                   | null                    |
-| options | options used in [assertExchange](http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertExchange) | null                    |
-
-### Queue options
-
-| Option  | Description                                                                                               | Default |
-| --------|-----------------------------------------------------------------------------------------------------------|---------|
-| name    | queue name                                                                                                | null    |
-| options | options used in [assertQueue](http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue) | null    |
-
-### Binding options
-
-| Option     | Description      | Default |
-| -----------|------------------|---------|
-| exchange   | exchange name    | null    |
-| routingKey | routing key name | null    |
-
 ### broker.assertExchanges
 
-Use `broker.assertExchanges` to create or check exchanges. It expects to receive an array of exchanges ([exchange options](#exchange-options).
+Use `broker.assertExchanges` to create or check exchanges. It expects to receive an array of exchanges ([exchange options](#exchange-options)). Example: 
 
-| Option   | Description                                               | Default |
-| ---------|-----------------------------------------------------------|---------|
-| exhanges | array of exchanges ([exchange options](#exchange-options) |[]       |
+```javascript
+const broker = require('./broker');
+
+const exchanges = [
+  { name: 'user_events', type: 'direct' },
+  { name: 'repo_events', type: 'topic', options: { durable: true } },
+  { name: 'commit_events', type: 'fanout' },
+];
+
+broker.assertExchanges(exchanges);
+```
+
+### broker.assertChannel
+
+Use `broker.assertChannel` to create or check channels. It expects to receive a context. Example:
+
+```javascript
+const broker = require('./broker');
+
+const context = 'consumer';
+const channel = await broker.assertChannel(context);
+```
 
 ### broker.consume
 
@@ -154,16 +135,33 @@ broker
   .catch(error => /* handle error */);
 ```
 
-### broker.sendToQueue
+### Broker options
 
-`broker.sendToQueue` expects to receive queue name, message and [publish options](https://www.squaremobius.net/amqp.node/channel_api.html#channel_publish). Example:
+| Option     | Description                           | Required  | Default |
+| -----------|---------------------------------------|-----------|---------|
+| host       | message broker connection url         | yes       | null    |
+| logger     | logger object                         | no        | console |
+| disableLog | disable log (all levels)              | no        | false   |
 
-```javascript
-const queue = {
-  options: {},
-};
+### Exchange options
 
-broker.sendToQueue('queue.name', { message: 'message' }, { queue })
-  .then(message => /* handle success */)
-  .catch(error => /* handle error */);
-```
+| Option  | Description                                                                                                     | Default                 |
+| --------|-----------------------------------------------------------------------------------------------------------------|-------------------------|
+| type    | direct, topic, fanout                                                                                           | empty string (deafault) |
+| name    | exchange name                                                                                                   | null                    |
+| options | options used in [assertExchange](http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertExchange) | null                    |
+
+### Queue options
+
+| Option  | Description                                                                                               | Default |
+| --------|-----------------------------------------------------------------------------------------------------------|---------|
+| name    | queue name                                                                                                | null    |
+| options | options used in [assertQueue](http://www.squaremobius.net/amqp.node/channel_api.html#channel_assertQueue) | null    |
+
+### Binding options
+
+| Option     | Description      | Default |
+| -----------|------------------|---------|
+| exchange   | exchange name    | null    |
+| routingKey | routing key name | null    |
+

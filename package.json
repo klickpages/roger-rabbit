@@ -1,6 +1,6 @@
 {
   "name": "@klicksite/roger-rabbit",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "amqplib wrapper",
   "main": "index.js",
   "private": false,
