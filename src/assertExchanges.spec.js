@@ -14,10 +14,10 @@ describe('assertExchanges', () => {
       ];
 
       channel = {
-        assertExchange: jest.fn().mockImplementation(() => Promise.resolve()),
+        assertExchange: jest.fn().mockResolvedValue(),
       };
 
-      connection = new Promise(resolve => resolve(channel));
+      connection = jest.fn().mockResolvedValue(channel);
 
       assertExchanges(connection)(exchanges);
     });

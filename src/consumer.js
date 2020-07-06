@@ -9,7 +9,7 @@ module.exports = (connection, baseOptions) => async (consumerOptions, callback) 
     queue,
   } = options;
 
-  const channel = await connection;
+  const channel = await connection();
 
   await channel.assertQueue(queue.name, queue.options);
   await Promise.all(bindings.map((binding) => {

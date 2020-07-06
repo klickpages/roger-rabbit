@@ -9,8 +9,8 @@ module.exports = (brokerOptions) => {
   const options = defaultsDeep({}, brokerOptions, defaultOptions);
 
   const connections = {
-    consumer: connection.connect({ context: 'consumer', ...options }),
-    publisher: connection.connect({ context: 'publisher', ...options }),
+    consumer: () => connection.connect({ context: 'consumer', ...options }),
+    publisher: () => connection.connect({ context: 'publisher', ...options }),
   };
 
   return {

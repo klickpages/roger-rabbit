@@ -24,7 +24,7 @@ describe('publisher', () => {
       },
     };
 
-    connection = Promise.resolve(channel);
+    connection = jest.fn().mockResolvedValue(channel);
   });
 
   describe('when the message was published', () => {

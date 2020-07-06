@@ -15,7 +15,7 @@ module.exports = (connection, baseOptions) => (
       exchange,
       routingKey,
     };
-    const channel = await connection;
+    const channel = await connection();
 
     const published = channel.publish(exchange, routingKey, content, options);
 

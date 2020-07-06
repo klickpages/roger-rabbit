@@ -10,11 +10,8 @@ describe('consumer', () => {
   let callback;
 
   beforeEach((done) => {
-    const assertQueue = jest.fn();
-    const bindQueue = jest.fn();
-
-    assertQueue.mockReturnValue(Promise.resolve());
-    bindQueue.mockReturnValue(Promise.resolve());
+    const assertQueue = jest.fn().mockResolvedValue();
+    const bindQueue = jest.fn().mockResolvedValue();
 
     channel = {
       assertQueue,
@@ -42,7 +39,7 @@ describe('consumer', () => {
       },
     };
 
-    connection = Promise.resolve(channel);
+    connection = jest.fn().mockResolvedValue(channel);
 
     callback = jest.fn();
 
