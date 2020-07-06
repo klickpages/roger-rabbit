@@ -3,6 +3,7 @@ const connection = require('./src/modules/connection');
 const consumer = require('./src/consumer');
 const publisher = require('./src/publisher');
 const assertExchanges = require('./src/assertExchanges');
+const assertChannel = require('./src/assertChannel');
 
 module.exports = (brokerOptions) => {
   const defaultOptions = { logger: console, disableLog: false };
@@ -17,5 +18,6 @@ module.exports = (brokerOptions) => {
     consume: consumer(connections.consumer, options),
     publish: publisher(connections.publisher, options),
     assertExchanges: assertExchanges(connections.consumer),
+    assertChannel: assertChannel(options),
   };
 };
