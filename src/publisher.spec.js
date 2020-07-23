@@ -55,7 +55,7 @@ describe('publisher', () => {
     test('call log info', () => {
       expect(helpers.log).toHaveBeenCalledWith(
         'info',
-        'message is published',
+        'message was published',
         expect.any(Object),
         {
           context: 'publisher',

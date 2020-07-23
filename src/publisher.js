@@ -25,7 +25,7 @@ module.exports = (connection, baseOptions) => (
       throw Error('Message can not be published');
     }
 
-    helpers.log('info', 'message is published', baseOptions, metadata);
+    helpers.log('info', 'message was published', baseOptions, metadata);
 
     return message;
   }

@@ -22,10 +22,10 @@ Module.consume = (options, channel, callback) => {
       helpers.log('info', 'message was consumed', options, metadata);
     } catch (error) {
       helpers.log('error', error.message, options, metadata);
+      const { requeue } = queue.options;
 
-      channel.reject(receivedMessage);
+      channel.reject(receivedMessage, requeue === false ? requeue : true);
     }
-
     return receivedMessage;
   });
 };

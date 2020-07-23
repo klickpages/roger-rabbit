@@ -11,6 +11,9 @@ describe('modules/channel', () => {
       options = {
         queue: {
           name: 'queue.name',
+          options: {
+            requeue: false,
+          },
         },
       };
 
@@ -86,7 +89,7 @@ describe('modules/channel', () => {
         });
 
         test('call channel.reject with received message', () => {
-          expect(channel.reject).toHaveBeenCalledWith(receivedMessage);
+          expect(channel.reject).toHaveBeenCalledWith(receivedMessage, false);
         });
       });
     });
@@ -115,7 +118,7 @@ describe('modules/channel', () => {
       });
 
       test('call channel.reject with received message', () => {
-        expect(channel.reject).toHaveBeenCalledWith(receivedMessage);
+        expect(channel.reject).toHaveBeenCalledWith(receivedMessage, false);
       });
     });
   });
