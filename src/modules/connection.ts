@@ -1,35 +1,27 @@
-import amqp from 'amqplib';
-import helpers from './helpers';
+import amqp, { Connection as AmqpConnection } from 'amqplib';
+import debuggerLogger from '../utils/debugger_logger';
+import { ConnectionError } from '../errors';
 
-const connections = {
-  publisher: null,
-  consumer: null
-};
+const CONTEXT_LOG = 'connection';
 
-class Connection {
-  private host;
+export default class Connection {
+  private host: string;
 
-  constructor(host : string) {
+  private channelMaxConnections: number;
+
+  constructor(host: string, channelMaxConnections: number = 4) {
     this.host = host;
+    this.channelMaxConnections = channelMaxConnections;
   }
 
-  static getConnection(host : string, context : string) : Connection {
-    if(!connections[context]) {
-      connections[context] = new Connection(host).create();
-    }
-
-    return connections[context];
-  }
-
-  private async create() : Promise<amqp.Connection> {
+  public async create(context: string = 'default'): Promise<AmqpConnection> {
     try {
-      const connection = await amqp.connect(this.host);
+      const connection = await amqp.connect(`${this.host}?channelMax=${this.channelMaxConnections}`);
+      debuggerLogger({ context: CONTEXT_LOG, message: `Connection ${context} created.` });
+
       return connection;
-    } catch(error) {
-      helpers.log('error', 'connection', error.message);
-      throw error;
+    } catch (error) {
+      throw new ConnectionError({ logMessage: `Error in create ${context} connection.`, error });
     }
   }
 }
-
-export default (host : string, context : string) => Connection.getConnection(host, context);
