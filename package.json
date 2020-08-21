@@ -8,7 +8,7 @@
   "private": false,
   "scripts": {
     "test": "npm run lint && npm run unit",
-    "unit": "NODE_ENV=test jest",
+    "unit": "NODE_ENV=test jest --coverage",
     "lint": "eslint",
     "build": "tsc -p ./tsconfig.json"
   },
