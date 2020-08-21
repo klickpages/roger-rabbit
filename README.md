@@ -13,57 +13,33 @@ Roger Rabbit is a module that makes the process of consuming and publishing mess
 npm install @klicksite/roger-rabbit --save
 ```
 
-## Example
+## Documentation
+
+### Broker
+
+Broker expect to receives a rabbitMQ connection string and [broker options](#broker-options). Example: 
 
 ```javascript
 // broker.js
 const Broker = require('roger-rabbit');
 
-const broker = Broker({
-  host: 'amqp://guest:guest@localhost:5672',
-});
+const broker = new Broker('amqp://guest:guest@localhost:5672');
 
 module.exports = broker;
 ```
 
-```javascript
-// consumer.js
-const broker = require('./broker');
+### broker.init
 
-const queue = {
-  name: 'queue.name',
-  options: {
-    durable: true,
-  },
-};
-
-const bindings = [
-  { exchange: 'user_events', routingKey: 'user_events.routingKey' },
-  { exchange: 'repo_events', routingKey: 'repo_events.routingKey' },
-];
-
-broker.consume({ queue, bindings }, (message) => {
-  // do something
-  // return a promise or
-  // throw an error to reject message
-});
-```
+Use `broker.init` to initialize broker, creating connections and channels based on [broker options](#broker-options). Example:
 
 ```javascript
-// publisher.js
+// main.js
 const broker = require('./broker');
 
-broker
-  .publish({
-    exchange: 'user_events',
-    routingKey: 'user_events.routingKey',
-    message: { message: 'hello world' },
-  })
-  .then(console.log)
-  .catch(console.error);
+(async() => {
+  await broker.init();
+})();
 ```
-
-## Documentation
 
 ### broker.assertExchanges
 
@@ -78,18 +54,9 @@ const exchanges = [
   { name: 'commit_events', type: 'fanout' },
 ];
 
-broker.assertExchanges(exchanges);
-```
-
-### broker.assertChannel
-
-Use `broker.assertChannel` to create or check channels. It expects to receive a context. Example:
-
-```javascript
-const broker = require('./broker');
-
-const context = 'consumer';
-const channel = await broker.assertChannel(context);
+(async() => {
+  await broker.assertExchanges(exchanges);
+})();
 ```
 
 ### broker.consume
@@ -111,10 +78,12 @@ const bindings = [
   { exchange: 'repo_events', routingKey: 'repo_events.routingKey' },
 ];
 
-broker.consume({ queue, bindings }, (message) => {
-  // do something
-  // throw an error to reject message
-});
+(async() => {
+  await broker.consume({ queue, bindings }, (message) => {
+    // do something
+    // throw an error to reject message
+  });
+})();
 ```
 
 ### broker.publish
@@ -124,25 +93,42 @@ broker.consume({ queue, bindings }, (message) => {
 ```javascript
 const options = { persistent: true };
 
-broker
-  .publish({
+broker.publish({
     exchange: 'user_events',
     routingKey: 'user_events.routingKey',
     message: { message: 'message' },
     options,
   })
-  .then(message => /* handle success */)
-  .catch(error => /* handle error */);
+```
+
+### broker.channels
+
+Use `broker.channels` to get channels. Examples:
+
+```javascript
+const broker = require('./broker');
+let context;
+let channel;
+
+//consumer
+context = 'consumer';
+channel = broker.channels[context].default;
+
+//publisher
+context = 'publisher';
+channel = broker.channels[context].default; // or broker.channels[context].confirmation;
 ```
 
 ### Broker options
 
-| Option     | Description                           | Required  | Default |
-| -----------|---------------------------------------|-----------|---------|
-| host       | message broker connection url         | yes       | null    |
-| logger     | logger object                         | no        | console |
-| disableLog | disable log (all levels)              | no        | false   |
-
+| Option                  | Description                                 | Required  | Default |
+| ------------------------|---------------------------------------------|-----------|---------|
+| channelMax              | number max of channels (max 3)              | no        | 3       |
+| publisher               | publisher object                            | no        | _       |
+| publisher.default       | create publish channel without confirmation | no        | true    |
+| publisher.confirmation  | create publish channel with confirmation    | no        | false   |
+| consumer                | consumer object                             | no        | _       |
+| consumer.default        | create consume channel                      | no        | true    |
 ### Exchange options
 
 | Option  | Description                                                                                                     | Default                 |
