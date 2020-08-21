@@ -1,17 +1,17 @@
 import { defaultsDeep } from 'lodash';
-import {
-  connections, channels, brokerOptions, contextArray, contextString, brokerInit,
-} from './types/broker';
-import { consumerOptions } from './types/consumer';
 import Connection from './modules/connection';
 import Channel from './modules/channel';
 import Publisher from './modules/publisher';
 import Consumer from './modules/consumer';
-import { channelStringTypes } from './types/channel';
 import ChannelError from './errors/ChannelError';
-import { publisherOptions } from './types/publisher';
-import { exchangeObject } from './types/exchange';
 import Exchange from './modules/exchange';
+import {
+  connections, channels, brokerInit, brokerOptions, contextArray, contextString,
+} from './interfaces/IBroker';
+import { exchangeObject } from './interfaces/IExchange';
+import { consumerOptions } from './interfaces/IConsumer';
+import { publisherOptions } from './interfaces/IPublisher';
+import { channelStringTypes } from './interfaces/IChannel';
 
 const defaultOptions = {
   channelMax: 4,

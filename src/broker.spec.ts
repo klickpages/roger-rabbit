@@ -1,11 +1,11 @@
 import Broker from './broker';
-import { brokerInit } from './types/broker';
 import { create as mockCreateConnection } from './modules/__mocks__/connection';
 import { channelTypes } from './modules/__mocks__/channel';
 import { ChannelError } from './errors';
 import { assert as mockAssertExchange } from './modules/__mocks__/exchange';
 import { publish as mockPublish } from './modules/__mocks__/publisher';
 import { consume as mockConsume } from './modules/__mocks__/consumer';
+import { brokerInit } from './interfaces/IBroker';
 
 jest.mock('./utils/debugger_logger');
 jest.mock('./utils/error_logger');

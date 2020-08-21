@@ -2,7 +2,7 @@ import { Channel as AmqpChannel } from 'amqplib';
 import MessageHelper from '../helpers/message_helper';
 import { ChannelError } from '../errors';
 import debuggerLogger from '../utils/debugger_logger';
-import { publisherOptions } from '../types/publisher';
+import { publisherOptions } from '../interfaces/IPublisher';
 
 export default class Publisher {
   private channel: AmqpChannel
@@ -11,7 +11,7 @@ export default class Publisher {
 
   constructor(channel: AmqpChannel) {
     this.channel = channel;
-    this.CONTEXT_LOG = this.constructor.name;
+    this.CONTEXT_LOG = this.constructor.name.toLocaleLowerCase();
   }
 
   public publish(options: publisherOptions): void {

@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { logErrorParams } from '../types/error_logger';
+import { logErrorParams } from '../interfaces/IErrorLogger';
 
 const logger = pino();
 

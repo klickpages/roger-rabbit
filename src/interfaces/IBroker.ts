@@ -1,7 +1,7 @@
 import { Connection as AmqpConnection, Channel as AmqpChannel, Replies } from 'amqplib';
-import { exchangeObject } from './exchange';
-import { publisherOptions } from './publisher';
-import { consumerOptions } from './consumer';
+import { exchangeObject } from './IExchange';
+import { consumerOptions } from './IConsumer';
+import { publisherOptions } from './IPublisher';
 
 export interface brokerInit {
   assertExchanges(exchanges: Array<exchangeObject>): Promise<Array<Replies.AssertExchange>>,
@@ -26,7 +26,7 @@ export interface channels {
   }
 }
 
-type brokerOptions = {
+export interface brokerOptions {
   channelMax?: number,
   contexts?: {
     publisher?: {
@@ -40,6 +40,6 @@ type brokerOptions = {
   },
 }
 
-type contextString = 'publisher' | 'consumer'
+export declare type contextString = 'publisher' | 'consumer'
 
-type contextArray = Array<contextString>
+export declare type contextArray = Array<contextString>

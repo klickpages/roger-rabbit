@@ -1,7 +1,7 @@
 import { connect, Channel as AmqpChannel } from 'amqplib';
 import Publisher from './publisher';
-import { publisherOptions } from '../types/publisher';
 import { ChannelError } from '../errors';
+import { publisherOptions } from '../interfaces/IPublisher';
 
 jest.mock('amqplib', () => ({
   connect: () => ({

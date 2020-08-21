@@ -1,7 +1,7 @@
 import { Channel } from 'amqplib';
 import debuggerLogger from '../utils/debugger_logger';
 import { QueueError } from '../errors';
-import { queueOptions, bindingObject } from '../types/queue';
+import { queueOptions, bindingObject } from '../interfaces/IQueue';
 
 class Queue {
   private channel: Channel;
@@ -13,7 +13,7 @@ class Queue {
   constructor(channel: Channel, options: queueOptions) {
     this.channel = channel;
     this.options = options;
-    this.CONTEXT_LOG = this.constructor.name;
+    this.CONTEXT_LOG = this.constructor.name.toLocaleLowerCase();
   }
 
   public async create(): Promise<void> {

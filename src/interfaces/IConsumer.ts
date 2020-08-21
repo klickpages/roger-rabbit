@@ -1,7 +1,7 @@
 import { Options } from 'amqplib';
-import { bindingObject } from './queue';
+import { bindingObject } from './IQueue';
 
-export type consumerOptions = {
+export interface consumerOptions {
   queue: {
     name: string,
     options: Options.AssertQueue,

@@ -8,6 +8,6 @@ export interface channelTypes {
   confirmation: () => Promise<AmqpConfirmChannel>,
 }
 
-type channelStringTypes = 'default' | 'confirmation';
+export declare type channelStringTypes = 'default' | 'confirmation';
 
-type channelContexts = 'consumer' | 'publisher'
+export declare type channelContexts = 'consumer' | 'publisher'

@@ -1,13 +1,14 @@
 {
   "name": "@klicksite/roger-rabbit",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "amqplib wrapper",
-  "main": "index.js",
+  "main": "src/broker.ts",
   "private": false,
   "scripts": {
     "test": "npm run lint && npm run unit",
     "unit": "NODE_ENV=test jest",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "build": "tsc -p ./tsconfig.json"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,7 @@
     "eslint-plugin-import": "^2.22.0",
     "jest": "26.4.0",
     "ts-jest": "^26.2.0",
+    "tsc": "^1.20150623.0",
     "typescript": "^3.9.7"
   }
 }

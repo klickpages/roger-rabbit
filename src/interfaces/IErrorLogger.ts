@@ -1,4 +1,4 @@
-export type logErrorParams = {
+export declare type logErrorParams = {
   message : string,
   error : Error,
 }

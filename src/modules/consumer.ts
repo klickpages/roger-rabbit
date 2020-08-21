@@ -2,9 +2,9 @@ import { Channel, Replies, ConsumeMessage } from 'amqplib';
 import { defaultsDeep } from 'lodash';
 import Queue from './queue';
 import MessageHelper from '../helpers/message_helper';
-import { consumerOptions } from '../types/consumer';
 import debuggerLogger from '../utils/debugger_logger';
 import ConsumerError from '../errors/ConsumerError';
+import { consumerOptions } from '../interfaces/IConsumer';
 
 export default class Consumer {
   private channel: Channel

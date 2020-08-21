@@ -2,7 +2,7 @@ import { connect, Connection as AmqpConnection, Channel as AmqpChannel } from 'a
 import Channel from './channel';
 import debuggerLogger from '../utils/debugger_logger';
 import { ChannelError } from '../errors';
-import { channelStringTypes, channelContexts } from '../types/channel';
+import { channelStringTypes, channelContexts } from '../interfaces/IChannel';
 
 jest.mock('amqplib', () => ({
   connect: () => ({

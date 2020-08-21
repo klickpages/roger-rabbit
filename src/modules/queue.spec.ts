@@ -1,7 +1,7 @@
 import { connect, Channel as AmqpChannel } from 'amqplib';
 import { QueueError } from '../errors';
-import { queueOptions } from '../types/queue';
 import Queue from './queue';
+import { queueOptions } from '../interfaces/IQueue';
 
 jest.mock('amqplib', () => ({
   connect: () => ({

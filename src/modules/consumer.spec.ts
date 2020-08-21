@@ -1,8 +1,8 @@
 import { connect, Channel as AmqpChannel, Replies } from 'amqplib';
 import MessageHelper from '../helpers/message_helper';
 import Consumer from './consumer';
-import { consumerOptions } from '../types/consumer';
 import ConsumerError from '../errors/ConsumerError';
+import { consumerOptions } from '../interfaces/IConsumer';
 
 const messageReceived = { content: 'test' };
 jest.mock('amqplib', () => ({
