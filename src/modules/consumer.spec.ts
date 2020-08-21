@@ -27,7 +27,6 @@ jest.mock('./queue', () => () => ({
 jest.mock('../helpers/message_helper');
 
 jest.mock('../utils/debugger_logger');
-jest.mock('../utils/error_logger');
 
 describe('consume', () => {
   const createMockedConnection = connect as jest.MockedFunction<typeof connect>;

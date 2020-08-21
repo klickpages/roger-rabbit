@@ -1,5 +1,4 @@
 import debuggerLogger from '../utils/debugger_logger';
-import errorLogger from '../utils/error_logger';
 
 const CONTEXT_LOG = 'message-helper';
 class MessageHelper {
@@ -11,7 +10,7 @@ class MessageHelper {
       });
       return jsonBuffered;
     } catch (error) {
-      errorLogger({ message: 'Error in convert JSON to Buffer', error });
+      debuggerLogger({ context: `error:${CONTEXT_LOG}`, message: 'Error in convert JSON to Buffer', metadata: { error } });
       throw error;
     }
   }
@@ -24,7 +23,7 @@ class MessageHelper {
       });
       return jsonParsed;
     } catch (error) {
-      errorLogger({ message: 'Error in convert Buffer to JSON.', error });
+      debuggerLogger({ context: `error:${CONTEXT_LOG}`, message: 'Error in convert Buffer to JSON.', metadata: { error } });
       throw error;
     }
   }

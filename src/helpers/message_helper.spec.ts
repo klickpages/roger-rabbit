@@ -1,7 +1,6 @@
 import MessageHelper from './message_helper';
 
 jest.mock('../utils/debugger_logger');
-jest.mock('../utils/error_logger');
 
 describe('jsonToBuffer', () => {
   describe('when call with right params', () => {

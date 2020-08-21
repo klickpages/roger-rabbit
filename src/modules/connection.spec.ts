@@ -2,7 +2,6 @@ import { connect, Connection as AmqpConnection } from 'amqplib';
 import Connection from './connection';
 import { ConnectionError } from '../errors';
 import debuggerLogger from '../utils/debugger_logger';
-import errorLogger from '../utils/error_logger';
 
 jest.mock('amqplib', () => ({
   connect: jest.fn()
@@ -11,8 +10,8 @@ jest.mock('amqplib', () => ({
     .mockResolvedValueOnce('third call')
     .mockRejectedValueOnce('fourth call'),
 }));
+
 jest.mock('../utils/debugger_logger');
-jest.mock('../utils/error_logger');
 
 describe('create', () => {
   describe('when context and channel max is not given', () => {
@@ -43,10 +42,6 @@ describe('create', () => {
         await expect(connectionThrowed).rejects.toThrow(new ConnectionError({
           logMessage: 'Error in create default connection.',
         }));
-      });
-
-      it('should call error_logger', () => {
-        expect(errorLogger).toHaveBeenCalled();
       });
     });
   });
@@ -82,24 +77,6 @@ describe('create', () => {
           logMessage: `Error in create ${contextConnection} connection.`,
         }));
       });
-
-      it('should call error_logger', () => {
-        expect(errorLogger).toHaveBeenCalled();
-      });
     });
   });
-
-  // describe('when context and channel max is given', () => {
-  //   const host = 'host';
-  //   const channelMax = 2;
-  //   const connection = new Connection(host, channelMax);
-  //   describe('and promise resolves', () => {
-  //     beforeAll(() => {
-  //       await connection
-  //     });
-  //   });
-  //   describe('and promise rejects', () => {
-
-  //   });
-  // });
 });

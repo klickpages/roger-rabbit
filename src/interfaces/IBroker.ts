@@ -1,15 +1,5 @@
-import { Connection as AmqpConnection, Channel as AmqpChannel, Replies } from 'amqplib';
-import { exchangeObject } from './IExchange';
-import { consumerOptions } from './IConsumer';
-import { publisherOptions } from './IPublisher';
-
-export interface brokerInit {
-  assertExchanges(exchanges: Array<exchangeObject>): Promise<Array<Replies.AssertExchange>>,
-  publish(options: publisherOptions): void,
-  publishConfirm(options: publisherOptions): void,
-  consume(options: consumerOptions, action: Function): Promise<Replies.Consume>,
-  channels: channels,
-}
+import { Connection as AmqpConnection, Channel as AmqpChannel } from 'amqplib';
+import Publisher from '../modules/publisher';
 
 export interface connections {
   publisher: AmqpConnection,
@@ -28,16 +18,19 @@ export interface channels {
 
 export interface brokerOptions {
   channelMax?: number,
-  contexts?: {
-    publisher?: {
-      default?: boolean,
-      confirmation?: boolean,
-    },
-    consumer?: {
-      default?: boolean,
-      confirmation?: false
-    },
+  publisher?: {
+    default?: boolean,
+    confirmation?: boolean,
   },
+  consumer?: {
+    default?: boolean,
+    confirmation?: false
+  },
+}
+
+export interface publisherInstances {
+  default?: Publisher,
+  confirmation?: Publisher,
 }
 
 export declare type contextString = 'publisher' | 'consumer'

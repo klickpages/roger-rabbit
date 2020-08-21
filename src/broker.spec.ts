@@ -5,10 +5,8 @@ import { ChannelError } from './errors';
 import { assert as mockAssertExchange } from './modules/__mocks__/exchange';
 import { publish as mockPublish } from './modules/__mocks__/publisher';
 import { consume as mockConsume } from './modules/__mocks__/consumer';
-import { brokerInit } from './interfaces/IBroker';
 
 jest.mock('./utils/debugger_logger');
-jest.mock('./utils/error_logger');
 jest.mock('./modules/connection', () => () => ({ create: mockCreateConnection }));
 jest.mock('./modules/channel', () => () => ({
   create: (type: 'default' | 'confirmation') => channelTypes[type](),
@@ -22,13 +20,13 @@ jest.mock('./modules/consumer', () => () => ({
 }));
 
 describe('Broker', () => {
-  let broker: brokerInit;
+  let broker: Broker;
 
   describe('init', () => {
     beforeAll(async () => {
       await new Broker('',
         {
-          contexts: { publisher: { confirmation: true, default: false } },
+          publisher: { confirmation: true, default: false },
         }).init();
     });
 
@@ -49,10 +47,8 @@ describe('Broker', () => {
     describe('when publisher channel does not exists', () => {
       beforeAll(async () => {
         broker = await new Broker('', {
-          contexts: {
-            publisher: {
-              default: false,
-            },
+          publisher: {
+            default: false,
           },
         }).init();
       });
@@ -82,10 +78,8 @@ describe('Broker', () => {
     describe('when channel default is not created', () => {
       beforeAll(async () => {
         broker = await new Broker('', {
-          contexts: {
-            publisher: {
-              default: false,
-            },
+          publisher: {
+            default: false,
           },
         }).init();
       });
@@ -118,11 +112,9 @@ describe('Broker', () => {
     describe('when chanel confirmation exists', () => {
       beforeAll(async () => {
         broker = await new Broker('', {
-          contexts: {
-            publisher: {
-              confirmation: true,
-              default: false,
-            },
+          publisher: {
+            confirmation: true,
+            default: false,
           },
         }).init();
         broker.publishConfirm({ exchange: 'exchange', message: 'test', routingKey: 'routingKey' });

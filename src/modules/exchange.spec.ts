@@ -15,7 +15,6 @@ jest.mock('amqplib', () => ({
 }));
 
 jest.mock('../utils/debugger_logger');
-jest.mock('../utils/error_logger');
 
 describe('assert', () => {
   const createMockedConnection = connect as jest.MockedFunction<typeof connect>;
