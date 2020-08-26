@@ -45,7 +45,7 @@ export default class Consumer {
       try {
         message = MessageHelper.bufferToJson(messageReceived.content);
 
-        await Promise.resolve(callback(message));
+        await callback(message);
         debuggerLogger({
           context: this.context,
           message: 'Message was consumed.',

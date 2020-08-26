@@ -2,3 +2,7 @@ src
 coverage
 node_modules
 tsconfig.*
+jest.config.json
+.eslintrc.js
+.travis.yml
+docs

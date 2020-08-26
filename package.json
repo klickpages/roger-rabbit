@@ -1,6 +1,6 @@
 {
   "name": "@klicksite/roger-rabbit",
-  "version": "5.0.1",
+  "version": "5.0.6",
   "author": "Klickpages <accounts@klickpages.com.br>",
   "license": "MIT",
   "description": "amqplib wrapper",
@@ -10,7 +10,9 @@
     "test": "npm run lint && npm run unit",
     "unit": "NODE_ENV=test jest --coverage",
     "lint": "eslint",
-    "build": "tsc -p ./tsconfig.json"
+    "build": "tsc -p ./tsconfig.json",
+    "prepublishnpm": "npm test && npm audit",
+    "publishnpm": "npm publish"
   },
   "repository": {
     "type": "git",
@@ -26,9 +28,9 @@
   },
   "homepage": "https://github.com/klickpages/roger-rabbit#readme",
   "dependencies": {
-    "amqplib": "^0.6.0",
-    "debug": "^4.1.1",
-    "lodash": "^4.17.11"
+    "amqplib": "0.6.0",
+    "debug": "4.1.1",
+    "lodash": "4.17.19"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.13",
@@ -38,7 +40,6 @@
     "@types/node": "^14.0.27",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
-    "babel-jest": "^26.3.0",
     "eslint": "^7.6.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
