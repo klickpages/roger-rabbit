@@ -11,6 +11,8 @@ export default class Channel {
 
   private channelTypes: channelTypes
 
+  private channel: AmqpChannel | AmpqConfirmChannel
+
   private CONTEXT_LOG: string
 
   constructor(connection: AmqpConnection) {
@@ -25,12 +27,12 @@ export default class Channel {
   public async create(type: channelStringTypes = 'default',
     context: channelContexts): Promise<AmqpChannel | AmpqConfirmChannel> {
     try {
-      const channel = await this.channelTypes[type].bind(this)();
+      this.channel = await this.channelTypes[type].bind(this)();
       debuggerLogger({ message: `Channel ${context}.${type} created.`, context: this.CONTEXT_LOG });
 
-      return channel;
+      return this.channel;
     } catch (error) {
-      throw new ChannelError({ error, logMessage: `Error in ${context}.${type} create channel.` });
+      throw new ChannelError({ error, message: `Error in ${context}.${type} create channel.` });
     }
   }
 }

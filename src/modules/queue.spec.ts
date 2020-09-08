@@ -61,7 +61,7 @@ describe('create', () => {
     describe('and assertQueue promise rejects', () => {
       it('should throw error', async () => {
         await expect(queue.create()).rejects.toThrow(new QueueError({
-          logMessage: 'Error on Queue assert.',
+          message: 'Error on Queue assert.',
         }));
       });
 
@@ -73,7 +73,7 @@ describe('create', () => {
     describe('and bindQueue promise rejects', () => {
       it('should throw error', async () => {
         await expect(queue.create()).rejects.toThrow(new QueueError({
-          logMessage: 'Error on Queue bind.',
+          message: 'Error on Queue bind.',
         }));
       });
     });

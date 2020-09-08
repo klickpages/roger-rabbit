@@ -9,6 +9,8 @@ export default class Connection {
 
   private CONTEXT_LOG: string
 
+  private connection: AmqpConnection
+
   constructor(host: string, channelMaxConnections: number = 4) {
     this.host = host;
     this.channelMaxConnections = channelMaxConnections;
@@ -17,12 +19,15 @@ export default class Connection {
 
   public async create(context: string = 'default'): Promise<AmqpConnection> {
     try {
-      const connection = await amqp.connect(`${this.host}?channelMax=${this.channelMaxConnections}`);
+      this.connection = await amqp.connect(
+        `${this.host}?channelMax=${this.channelMaxConnections}&heartbeat=60`,
+      );
+
       debuggerLogger({ context: this.CONTEXT_LOG, message: `Connection ${context} created.` });
 
-      return connection;
+      return this.connection;
     } catch (error) {
-      throw new ConnectionError({ logMessage: `Error in create ${context} connection.`, error });
+      throw new ConnectionError({ message: `Error in create ${context} connection.`, error });
     }
   }
 }

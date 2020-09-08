@@ -1,4 +1,5 @@
 import { defaultsDeep } from 'lodash';
+import { Channel as AmqpChannel, ConfirmChannel as AmqpConfirmChannel } from 'amqplib';
 import Connection from './modules/connection';
 import Channel from './modules/channel';
 import Publisher from './modules/publisher';
@@ -6,12 +7,13 @@ import Consumer from './modules/consumer';
 import ChannelError from './errors/ChannelError';
 import Exchange from './modules/exchange';
 import {
-  connections, channels, brokerOptions, contextArray, contextString, publisherInstances,
+  connections, channels, brokerOptions, contextArray, contextString,
 } from './interfaces/IBroker';
 import { exchangeObject } from './interfaces/IExchange';
 import { consumerOptions } from './interfaces/IConsumer';
 import { publisherOptions } from './interfaces/IPublisher';
 import { channelStringTypes } from './interfaces/IChannel';
+import debuggerLogger from './utils/debugger_logger';
 
 const defaultOptions = {
   channelMax: 3,
@@ -25,21 +27,22 @@ const defaultOptions = {
 };
 
 class Broker {
-  private connections: connections
+  private brokerConnections: connections
 
   private brokerChannels: channels
 
   private options: brokerOptions
 
-  private publisherInstances: publisherInstances;
-
   constructor(private host: string, options: brokerOptions = defaultOptions) {
     this.options = defaultsDeep({}, options, defaultOptions);
     this.options.consumer.confirmation = false;
-    this.publisherInstances = {};
   }
 
-  get channels() {
+  get connections(): connections {
+    return this.brokerConnections;
+  }
+
+  get channels(): channels {
     return this.brokerChannels;
   }
 
@@ -47,16 +50,7 @@ class Broker {
     const contexts: contextArray = ['publisher', 'consumer'];
     await Promise.all(contexts.map(this.createConnection.bind(this)));
     await Promise.all(contexts.map(this.createChannel.bind(this)));
-
-    const channelTypes: Array<channelStringTypes> = ['default', 'confirmation'];
-
-    channelTypes.forEach((type) => {
-      if (this.options.publisher[type] === true) {
-        this.publisherInstances[type] = new Publisher(this.brokerChannels.publisher[type]);
-      }
-    });
-
-    this.init = function init() { return Promise.resolve(this); };
+    await this.recoverStatesListener();
 
     return this;
   }
@@ -69,7 +63,7 @@ class Broker {
       : null;
 
     if (!channel) {
-      throw new ChannelError({ logMessage: 'Publisher channels was not created.' });
+      throw new ChannelError({ message: 'Publisher channels was not created.' });
     }
 
     return new Exchange(channel).assert(exchanges);
@@ -94,7 +88,7 @@ class Broker {
         [context]: await new Connection(this.host, this.options.channelMax)
           .create(context),
       };
-      this.connections = defaultsDeep({}, connection, this.connections);
+      this.brokerConnections = defaultsDeep({}, connection, this.brokerConnections);
     }
   }
 
@@ -108,10 +102,11 @@ class Broker {
   ) {
     const contextObjectConfig = this.options[context];
 
-    if (contextObjectConfig[channelType] && this.connections[context]) {
+    if (contextObjectConfig[channelType] && this.brokerConnections[context]) {
       const channel = {
         [context]: {
-          [channelType]: await new Channel(this.connections[context]).create(channelType, context),
+          [channelType]: await new Channel(this.brokerConnections[context])
+            .create(channelType, context),
         },
       };
       this.brokerChannels = defaultsDeep({}, channel, this.brokerChannels);
@@ -120,10 +115,36 @@ class Broker {
 
   private genericPublish(options: publisherOptions, type: channelStringTypes) {
     if (this.options.publisher[type] !== true) {
-      throw new ChannelError({ logMessage: `Publish ${type} channel was not created.` });
+      throw new ChannelError({ message: `Publish ${type} channel was not created.` });
     }
 
-    return this.publisherInstances[type].publish(options);
+    return new Publisher(this.brokerChannels.publisher[type]).publish(options);
+  }
+
+  private async channelListeners(
+    channel: AmqpChannel | AmqpConfirmChannel, context: contextString,
+  ): Promise<void> {
+    debuggerLogger({ context: 'broker', message: `Creating listeners for ${context}` });
+    channel.on('error', async () => {
+      await this.brokerConnections[context].close();
+      await this.createConnection.bind(this)(context);
+      await this.createChannel.bind(this)(context);
+      channel.emit('recreated');
+    });
+  }
+
+  private async recoverStatesListener() {
+    if (this.options.consumer.default === true) {
+      await this.channelListeners(this.brokerChannels.consumer.default, 'consumer');
+    }
+
+    if (this.options.publisher.default === true) {
+      await this.channelListeners(this.brokerChannels.publisher.default, 'publisher');
+    }
+
+    if (this.options.publisher.confirmation === true) {
+      await this.channelListeners(this.brokerChannels.publisher.confirmation, 'publisher');
+    }
   }
 }
 export = Broker;

@@ -37,7 +37,7 @@ class Queue {
         },
       });
     } catch (error) {
-      throw new QueueError({ logMessage: 'Error on Queue assert.', error });
+      throw new QueueError({ message: 'Error on Queue assert.', error });
     }
   }
 
@@ -57,7 +57,7 @@ class Queue {
         },
       });
     } catch (error) {
-      throw new QueueError({ logMessage: 'Error on Queue bind.', error });
+      throw new QueueError({ message: 'Error on Queue bind.', error });
     }
   }
 }

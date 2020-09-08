@@ -48,7 +48,7 @@ describe('publish', () => {
     describe('and publish return false(buffer full)', () => {
       it('should throw error', () => {
         expect(() => publisher.publish(options)).toThrow(new ChannelError({
-          logMessage: 'Channel buffer size is full.',
+          message: 'Channel buffer size is full.',
         }));
       });
 

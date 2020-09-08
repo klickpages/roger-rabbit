@@ -47,7 +47,7 @@ describe('assert', () => {
     });
     it('should throw Exchange Error with right params', async () => {
       await expect(assertRejected).rejects.toThrow(new ExchangeError({
-        logMessage: `Error on create exchange exchange2.direct.${JSON.stringify(options)}`,
+        message: `Error on create exchange exchange2.direct.${JSON.stringify(options)}`,
       }));
     });
   });

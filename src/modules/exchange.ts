@@ -25,7 +25,7 @@ export default class Exchange {
       return this.channel.assertExchange(name, type, options)
         .catch((error) => {
           throw new ExchangeError({
-            logMessage: `Error on create exchange ${name}.${type}.${JSON.stringify(options)}`,
+            message: `Error on create exchange ${name}.${type}.${JSON.stringify(options)}`,
             error,
           });
         });

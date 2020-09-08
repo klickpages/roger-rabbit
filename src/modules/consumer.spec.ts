@@ -102,7 +102,7 @@ describe('consume', () => {
 
       it('should throw ConsumerError', async () => {
         await expect(consumerRejected).rejects.toThrow(new ConsumerError({
-          logMessage: 'Error on consume message',
+          message: 'Error on consume message',
         }));
       });
 
