@@ -7,20 +7,23 @@ export default class Connection {
 
   private channelMaxConnections: number;
 
+  private heartbeat: number
+
   private CONTEXT_LOG: string
 
   private connection: AmqpConnection
 
-  constructor(host: string, channelMaxConnections: number = 4) {
+  constructor(host: string, channelMaxConnections: number = 3, heartbeat: number = 30) {
     this.host = host;
     this.channelMaxConnections = channelMaxConnections;
+    this.heartbeat = heartbeat;
     this.CONTEXT_LOG = this.constructor.name.toLocaleLowerCase();
   }
 
   public async create(context: string = 'default'): Promise<AmqpConnection> {
     try {
       this.connection = await amqp.connect(
-        `${this.host}?channelMax=${this.channelMaxConnections}&heartbeat=60`,
+        `${this.host}?channelMax=${this.channelMaxConnections}&heartbeat=${this.heartbeat}`,
       );
 
       debuggerLogger({ context: this.CONTEXT_LOG, message: `Connection ${context} created.` });

@@ -16,8 +16,8 @@ jest.mock('../utils/debugger_logger');
 describe('create', () => {
   describe('when context and channel max is not given', () => {
     const host = 'host';
-    const channelMax = 4;
-    const heartbeat = 60;
+    const channelMax = 3;
+    const heartbeat = 30;
     const connection = new Connection(host);
     describe('and promise resolves', () => {
       beforeAll(async () => {
@@ -53,7 +53,7 @@ describe('create', () => {
     const channelMax = 2;
     const heartbeat = 60;
     const contextConnection = 'publisher';
-    const connection = new Connection(host, channelMax);
+    const connection = new Connection(host, channelMax, heartbeat);
     describe('and promise resolves', () => {
       beforeAll(async () => {
         await connection.create(contextConnection);

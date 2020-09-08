@@ -48,14 +48,10 @@ describe('Broker', () => {
   });
 
   describe('eventEmitter', () => {
-    describe('when error is emitted', () => {
+    describe('when connection close is emitted', () => {
       beforeAll(async () => {
         broker = await new Broker('').init();
-        broker.channels.publisher.default.emit('error');
-      });
-
-      it('should close connection', () => {
-        expect(broker.connections.publisher.close).toHaveBeenCalledTimes(1);
+        broker.connections.publisher.emit('close');
       });
 
       it('should call create connection again', () => {

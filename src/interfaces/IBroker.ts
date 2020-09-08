@@ -18,6 +18,7 @@ export interface channels {
 
 export interface brokerOptions {
   channelMax?: number,
+  heartbeat?: number,
   publisher?: {
     default?: boolean,
     confirmation?: boolean,
