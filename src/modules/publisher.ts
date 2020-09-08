@@ -30,7 +30,7 @@ export default class Publisher {
     const published = this.channel.publish(exchange, routingKey, content);
 
     if (!published) {
-      throw new ChannelError({ logMessage: 'Channel buffer size is full.' });
+      throw new ChannelError({ message: 'Channel buffer size is full.' });
     }
 
     debuggerLogger({

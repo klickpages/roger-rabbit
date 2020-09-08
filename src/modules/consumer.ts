@@ -71,7 +71,7 @@ export default class Consumer {
             : true,
         );
         throw new ConsumerError({
-          logMessage: 'Error on consume message',
+          message: 'Error on consume message',
           error,
         });
       }

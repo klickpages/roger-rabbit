@@ -16,13 +16,15 @@ jest.mock('../utils/debugger_logger');
 describe('create', () => {
   describe('when context and channel max is not given', () => {
     const host = 'host';
+    const channelMax = 4;
+    const heartbeat = 60;
     const connection = new Connection(host);
     describe('and promise resolves', () => {
       beforeAll(async () => {
         await connection.create();
       });
       it('should call connect from amqplib', () => {
-        expect(connect).toHaveBeenCalledWith(`${host}?channelMax=4`);
+        expect(connect).toHaveBeenCalledWith(`${host}?channelMax=${channelMax}&heartbeat=${heartbeat}`);
       });
 
       it('should call debugger_logger', () => {
@@ -40,7 +42,7 @@ describe('create', () => {
 
       it('should throw error', async () => {
         await expect(connectionThrowed).rejects.toThrow(new ConnectionError({
-          logMessage: 'Error in create default connection.',
+          message: 'Error in create default connection.',
         }));
       });
     });
@@ -49,6 +51,7 @@ describe('create', () => {
   describe('when context and channel max is given', () => {
     const host = 'host';
     const channelMax = 2;
+    const heartbeat = 60;
     const contextConnection = 'publisher';
     const connection = new Connection(host, channelMax);
     describe('and promise resolves', () => {
@@ -56,7 +59,7 @@ describe('create', () => {
         await connection.create(contextConnection);
       });
       it('should call connect from amqplib', () => {
-        expect(connect).toHaveBeenCalledWith(`${host}?channelMax=${channelMax}`);
+        expect(connect).toHaveBeenCalledWith(`${host}?channelMax=${channelMax}&heartbeat=${heartbeat}`);
       });
 
       it('should call debugger_logger', () => {
@@ -74,7 +77,7 @@ describe('create', () => {
 
       it('should throw error', async () => {
         await expect(connectionThrowed).rejects.toThrow(new ConnectionError({
-          logMessage: `Error in create ${contextConnection} connection.`,
+          message: `Error in create ${contextConnection} connection.`,
         }));
       });
     });

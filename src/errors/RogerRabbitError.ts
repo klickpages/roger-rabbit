@@ -4,12 +4,12 @@ import { rogerRabbitErrorParams } from '../interfaces/IRogerRabbitError';
 export abstract class RogerRabbitError extends Error {
   private CONTEXT_LOG: string
 
-  constructor({ logMessage, error }: rogerRabbitErrorParams) {
-    const message = error instanceof Error
+  constructor({ message, error }: rogerRabbitErrorParams) {
+    const errorMessage = error instanceof Error
       ? error.message
-      : logMessage;
+      : message;
 
-    super(message);
+    super(errorMessage);
 
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
@@ -18,7 +18,7 @@ export abstract class RogerRabbitError extends Error {
 
     debuggerLogger({
       context: this.CONTEXT_LOG,
-      message,
+      message: errorMessage,
       metadata: {
         error: {
           stack: this.stack,

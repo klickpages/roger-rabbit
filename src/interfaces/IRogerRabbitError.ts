@@ -1,4 +1,4 @@
 export declare type rogerRabbitErrorParams = {
-  logMessage: string,
+  message: string,
   error?: Error,
 }

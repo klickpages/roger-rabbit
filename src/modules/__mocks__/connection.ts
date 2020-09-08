@@ -11,4 +11,5 @@ export const create = jest.fn().mockResolvedValue({
     consume: jest.fn(),
   }),
   createConfirmChannel: () => (channelsDefaultFunctions),
+  close: jest.fn(),
 });

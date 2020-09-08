@@ -66,7 +66,7 @@ describe('create', () => {
 
       it('should trhow ChannelError with right param', async () => {
         await expect(channelRejected).rejects.toThrow(new ChannelError({
-          logMessage: `Error in ${channelContext}.${channelType} create channel.`,
+          message: `Error in ${channelContext}.${channelType} create channel.`,
         }));
       });
     });
@@ -99,7 +99,7 @@ describe('create', () => {
 
       it('should trhow ChannelError with right param', async () => {
         await expect(channelRejected).rejects.toThrow(new ChannelError({
-          logMessage: `Error in ${channelContext}.${channelType} create channel.`,
+          message: `Error in ${channelContext}.${channelType} create channel.`,
         }));
       });
     });

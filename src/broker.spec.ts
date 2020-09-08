@@ -41,6 +41,31 @@ describe('Broker', () => {
     it('should call confirmation create channel', () => {
       expect(channelTypes.confirmation).toHaveBeenCalledTimes(1);
     });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+    });
+  });
+
+  describe('eventEmitter', () => {
+    describe('when error is emitted', () => {
+      beforeAll(async () => {
+        broker = await new Broker('').init();
+        broker.channels.publisher.default.emit('error');
+      });
+
+      it('should close connection', () => {
+        expect(broker.connections.publisher.close).toHaveBeenCalledTimes(1);
+      });
+
+      it('should call create connection again', () => {
+        expect(mockCreateConnection).toHaveBeenCalledTimes(3);
+      });
+
+      it('should call create channel again', () => {
+        expect(channelTypes.default).toHaveBeenCalledTimes(3);
+      });
+    });
   });
 
   describe('assertExchanges', () => {
@@ -54,7 +79,7 @@ describe('Broker', () => {
       });
       it('should throw channel error', async () => {
         expect(() => broker.assertExchanges([])).toThrow(new ChannelError({
-          logMessage: 'Publisher channels was not created.',
+          message: 'Publisher channels was not created.',
         }));
       });
     });
@@ -88,7 +113,7 @@ describe('Broker', () => {
         expect(() => broker
           .publish({ exchange: 'exchange', message: 'test', routingKey: 'routingKey' })).toThrow(
           new ChannelError({
-            logMessage: 'Publish default channel was not created.',
+            message: 'Publish default channel was not created.',
           }),
         );
       });
