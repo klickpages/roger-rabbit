@@ -24,10 +24,14 @@ export default class Channel {
     this.CONTEXT_LOG = this.constructor.name.toLocaleLowerCase();
   }
 
-  public async create(type: channelStringTypes = 'default',
-    context: channelContexts): Promise<AmqpChannel | AmpqConfirmChannel> {
+  public async create(
+    type: channelStringTypes = 'default',
+    context: channelContexts,
+    prefetch: number,
+  ): Promise<AmqpChannel | AmpqConfirmChannel> {
     try {
       this.channel = await this.channelTypes[type].bind(this)();
+      this.channel.prefetch(prefetch);
       debuggerLogger({ message: `Channel ${context}.${type} created.`, context: this.CONTEXT_LOG });
 
       return this.channel;

@@ -24,6 +24,7 @@ const defaultOptions = {
   consumer: {
     default: true,
   },
+  prefetch: 1,
 };
 
 class Broker {
@@ -101,12 +102,13 @@ class Broker {
     context: contextString, channelType: channelStringTypes,
   ) {
     const contextObjectConfig = this.options[context];
+    const { prefetch } = this.options;
 
     if (contextObjectConfig[channelType] && this.brokerConnections[context]) {
       const channel = {
         [context]: {
           [channelType]: await new Channel(this.brokerConnections[context])
-            .create(channelType, context),
+            .create(channelType, context, prefetch),
         },
       };
       this.brokerChannels = defaultsDeep({}, channel, this.brokerChannels);
