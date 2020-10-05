@@ -1,3 +1,4 @@
+import { isFatalError } from 'amqplib/lib/connection';
 import Broker from './broker';
 import { create as mockCreateConnection } from './modules/__mocks__/connection';
 import { channelTypes } from './modules/__mocks__/channel';
@@ -51,7 +52,7 @@ describe('Broker', () => {
     describe('when connection close is emitted', () => {
       beforeAll(async () => {
         broker = await new Broker('').init();
-        broker.connections.publisher.emit('close');
+        broker.connections.publisher.emit('close', { code: 200 });
       });
 
       it('should call create connection again', () => {

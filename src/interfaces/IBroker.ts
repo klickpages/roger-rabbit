@@ -28,6 +28,7 @@ export interface brokerOptions {
     confirmation?: false
   },
   prefetch?: number,
+  errorLogger?: Function,
 }
 
 export interface publisherInstances {

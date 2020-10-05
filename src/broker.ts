@@ -1,5 +1,6 @@
 import { defaultsDeep } from 'lodash';
 import { Connection as AmqpConnection } from 'amqplib';
+import { isFatalError } from 'amqplib/lib/connection';
 import Connection from './modules/connection';
 import Channel from './modules/channel';
 import Publisher from './modules/publisher';
@@ -26,6 +27,7 @@ const defaultOptions = {
     default: true,
   },
   prefetch: 1,
+  errorLogger: () => { },
 };
 
 class Broker {
@@ -128,13 +130,13 @@ class Broker {
     connection: AmqpConnection, context: contextString,
   ): Promise<void> {
     debuggerLogger({ context: 'broker', message: `Creating connection listener for ${context}` });
-    connection.on('error', (error) => {
-      debuggerLogger({ context: 'broker:error', message: 'Erro on connections.', metadata: error });
-    });
-    connection.on('close', async () => {
+    connection.on('close', async (error) => {
+      if (isFatalError(error)) {
+        this.options.errorLogger(error);
+        throw error;
+      }
       await this.createConnection.bind(this)(context);
       await this.createChannel.bind(this)(context);
-      connection.emit('recreated');
     });
   }
 
