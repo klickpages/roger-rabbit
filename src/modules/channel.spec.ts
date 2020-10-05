@@ -7,11 +7,11 @@ import { channelStringTypes, channelContexts } from '../interfaces/IChannel';
 jest.mock('amqplib', () => ({
   connect: () => ({
     createChannel: jest.fn()
-      .mockResolvedValueOnce('default')
-      .mockResolvedValueOnce('second')
+      .mockResolvedValueOnce({ prefetch: jest.fn() })
+      .mockResolvedValueOnce({ prefetch: jest.fn() })
       .mockRejectedValueOnce('third call'),
     createConfirmChannel: jest.fn()
-      .mockResolvedValueOnce('default')
+      .mockResolvedValueOnce({ prefetch: jest.fn() })
       .mockRejectedValueOnce('second call'),
   }),
 }));
@@ -23,6 +23,7 @@ describe('create', () => {
   let channel: Channel;
   let channelType: channelStringTypes;
   const channelContext: channelContexts = 'publisher';
+  const prefetch = 1;
 
   beforeAll(async () => {
     mockedConnection = await createMockedConnection('');
@@ -30,7 +31,7 @@ describe('create', () => {
   });
   describe('when channel type is not given', () => {
     beforeAll(async () => {
-      await channel.create(undefined, channelContext);
+      await channel.create(undefined, channelContext, prefetch);
     });
 
     describe('and promise resolve', () => {
@@ -43,7 +44,7 @@ describe('create', () => {
     describe('and promise resolve', () => {
       beforeAll(async () => {
         channelType = 'default';
-        await channel.create(channelType, channelContext);
+        await channel.create(channelType, channelContext, prefetch);
       });
 
       it('should call createChannel from amqplib', () => {
@@ -61,7 +62,7 @@ describe('create', () => {
       let channelRejected: Promise<AmqpChannel>;
       beforeAll(() => {
         channelType = 'default';
-        channelRejected = channel.create(channelType, channelContext);
+        channelRejected = channel.create(channelType, channelContext, prefetch);
       });
 
       it('should trhow ChannelError with right param', async () => {
@@ -76,7 +77,7 @@ describe('create', () => {
     describe('and promise resolve', () => {
       beforeAll(async () => {
         channelType = 'confirmation';
-        await channel.create(channelType, channelContext);
+        await channel.create(channelType, channelContext, prefetch);
       });
 
       it('should call createConfirmChannel from amqplib', () => {
@@ -94,7 +95,7 @@ describe('create', () => {
       let channelRejected: Promise<AmqpChannel>;
       beforeAll(() => {
         channelType = 'confirmation';
-        channelRejected = channel.create(channelType, channelContext);
+        channelRejected = channel.create(channelType, channelContext, prefetch);
       });
 
       it('should trhow ChannelError with right param', async () => {

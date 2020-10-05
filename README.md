@@ -17,7 +17,7 @@ npm install @klicksite/roger-rabbit --save
 
 ### Broker
 
-Broker expect to receives a rabbitMQ connection string and [broker options](#broker-options). Example: 
+Broker expect to receives a rabbitMQ connection string and [broker options](#broker-options). Example:
 
 ```javascript
 // broker.js
@@ -43,7 +43,7 @@ const broker = require('./broker');
 
 ### broker.assertExchanges
 
-Use `broker.assertExchanges` to create or check exchanges. It expects to receive an array of exchanges ([exchange options](#exchange-options)). Example: 
+Use `broker.assertExchanges` to create or check exchanges. It expects to receive an array of exchanges ([exchange options](#exchange-options)). Example:
 
 ```javascript
 const broker = require('./broker');
@@ -129,6 +129,8 @@ channel = broker.channels[context].default; // or broker.channels[context].confi
 | publisher.confirmation  | create publish channel with confirmation    | no        | false   |
 | consumer                | consumer object                             | no        | _       |
 | consumer.default        | create consume channel                      | no        | true    |
+| prefetch                | channel prefetch count                      | no        | 1       |
+
 ### Exchange options
 
 | Option  | Description                                                                                                     | Default                 |
@@ -150,4 +152,3 @@ channel = broker.channels[context].default; // or broker.channels[context].confi
 | -----------|------------------|---------|
 | exchange   | exchange name    | null    |
 | routingKey | routing key name | null    |
-

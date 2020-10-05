@@ -26,6 +26,7 @@ export interface brokerOptions {
     default?: boolean,
     confirmation?: false
   },
+  prefetch?: number,
 }
 
 export interface publisherInstances {
