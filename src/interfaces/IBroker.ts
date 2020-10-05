@@ -18,6 +18,7 @@ export interface channels {
 
 export interface brokerOptions {
   channelMax?: number,
+  heartbeat?: number,
   publisher?: {
     default?: boolean,
     confirmation?: boolean,
@@ -27,6 +28,7 @@ export interface brokerOptions {
     confirmation?: false
   },
   prefetch?: number,
+  errorLogger?: Function,
 }
 
 export interface publisherInstances {

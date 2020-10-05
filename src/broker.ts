@@ -1,5 +1,6 @@
 import { defaultsDeep } from 'lodash';
-import { Channel as AmqpChannel, ConfirmChannel as AmqpConfirmChannel } from 'amqplib';
+import { Connection as AmqpConnection } from 'amqplib';
+import { isFatalError } from 'amqplib/lib/connection';
 import Connection from './modules/connection';
 import Channel from './modules/channel';
 import Publisher from './modules/publisher';
@@ -17,6 +18,7 @@ import debuggerLogger from './utils/debugger_logger';
 
 const defaultOptions = {
   channelMax: 3,
+  heartbeat: 30,
   publisher: {
     default: true,
     confirmation: false,
@@ -25,6 +27,7 @@ const defaultOptions = {
     default: true,
   },
   prefetch: 1,
+  errorLogger: () => { },
 };
 
 class Broker {
@@ -123,29 +126,27 @@ class Broker {
     return new Publisher(this.brokerChannels.publisher[type]).publish(options);
   }
 
-  private async channelListeners(
-    channel: AmqpChannel | AmqpConfirmChannel, context: contextString,
+  private async connectionListeners(
+    connection: AmqpConnection, context: contextString,
   ): Promise<void> {
-    debuggerLogger({ context: 'broker', message: `Creating listeners for ${context}` });
-    channel.on('error', async () => {
-      await this.brokerConnections[context].close();
+    debuggerLogger({ context: 'broker', message: `Creating connection listener for ${context}` });
+    connection.on('close', async (error) => {
+      if (isFatalError(error)) {
+        this.options.errorLogger(error);
+        throw error;
+      }
       await this.createConnection.bind(this)(context);
       await this.createChannel.bind(this)(context);
-      channel.emit('recreated');
     });
   }
 
   private async recoverStatesListener() {
     if (this.options.consumer.default === true) {
-      await this.channelListeners(this.brokerChannels.consumer.default, 'consumer');
+      await this.connectionListeners(this.connections.consumer, 'consumer');
     }
 
-    if (this.options.publisher.default === true) {
-      await this.channelListeners(this.brokerChannels.publisher.default, 'publisher');
-    }
-
-    if (this.options.publisher.confirmation === true) {
-      await this.channelListeners(this.brokerChannels.publisher.confirmation, 'publisher');
+    if (this.options.publisher.default === true || this.options.publisher.confirmation === true) {
+      await this.connectionListeners(this.connections.publisher, 'publisher');
     }
   }
 }

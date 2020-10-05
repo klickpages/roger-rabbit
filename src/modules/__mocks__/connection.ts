@@ -1,3 +1,7 @@
+import { EventEmitter } from 'events';
+
+const emmiter = new EventEmitter();
+
 export const channelsDefaultFunctions = {
   assertExchanges: jest.fn(),
   assertQueue: jest.fn(),
@@ -12,4 +16,6 @@ export const create = jest.fn().mockResolvedValue({
   }),
   createConfirmChannel: () => (channelsDefaultFunctions),
   close: jest.fn(),
+  on: emmiter.on,
+  emit: emmiter.emit,
 });
