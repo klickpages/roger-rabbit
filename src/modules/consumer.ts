@@ -66,8 +66,8 @@ export default class Consumer {
         });
         this.channel.reject(
           messageReceived,
-          this.options.queue.requeue === false
-            ? this.options.queue.requeue
+          this.options.queue.options.requeue === false
+            ? this.options.queue.options.requeue
             : true,
         );
         throw new ConsumerError({
