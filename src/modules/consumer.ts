@@ -23,7 +23,9 @@ export default class Consumer {
   public consume(callback: Function): Promise<Replies.Consume> {
     const { queue: { name: queueName } } = this.options;
     return this.channel.consume(queueName,
-      (messageReceived) => this.onConsumeMessage(messageReceived, callback));
+      (messageReceived) => this.onConsumeMessage(
+        messageReceived, callback,
+      ), { consumerTag: this.options.consumerTag });
   }
 
   private createQueue(): Promise<void> {

@@ -6,9 +6,10 @@ interface AssertQueueWithRequeue extends Options.AssertQueue {
 }
 export interface consumerOptions {
   queue: {
-    name: string,
-    options: AssertQueueWithRequeue,
-  },
-  bindings: Array<bindingObject>,
-  prefetch: number,
+    name: string
+    options: AssertQueueWithRequeue
+  }
+  consumerTag: string
+  bindings: Array<bindingObject>
+  prefetch: number
 }
