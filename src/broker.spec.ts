@@ -1,4 +1,3 @@
-import { isFatalError } from 'amqplib/lib/connection';
 import Broker from './broker';
 import { create as mockCreateConnection } from './modules/__mocks__/connection';
 import { channelTypes } from './modules/__mocks__/channel';
@@ -50,17 +49,19 @@ describe('Broker', () => {
 
   describe('eventEmitter', () => {
     describe('when connection close is emitted', () => {
-      beforeAll(async () => {
-        broker = await new Broker('').init();
-        broker.connections.publisher.emit('close', { code: 200 });
-      });
+      describe('and is not a fatal error', () => {
+        beforeAll(async () => {
+          broker = await new Broker('').init();
+          broker.connections.publisher.emit('close', { code: 200 });
+        });
 
-      it('should call create connection again', () => {
-        expect(mockCreateConnection).toHaveBeenCalledTimes(3);
-      });
+        it('should call create connection again', () => {
+          expect(mockCreateConnection).toHaveBeenCalledTimes(3);
+        });
 
-      it('should call create channel again', () => {
-        expect(channelTypes.default).toHaveBeenCalledTimes(3);
+        it('should call create channel again', () => {
+          expect(channelTypes.default).toHaveBeenCalledTimes(3);
+        });
       });
     });
   });
@@ -156,9 +157,9 @@ describe('Broker', () => {
         prefetch: 1,
         queue: {
           name: 'queue',
-          requeue: false,
           options: {},
         },
+        consumerTag: 'test',
       }, () => {});
     });
 

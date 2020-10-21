@@ -35,10 +35,10 @@ describe('consume', () => {
     queue: {
       name: 'test',
       options: {},
-      requeue: false,
     },
     bindings: [{ exchange: 'test', routingKey: 'test' }],
     prefetch: 0,
+    consumerTag: 'test',
   };
   describe('when message is consumed', () => {
     const callback: jest.MockedFunction<typeof Function> = jest.fn()
