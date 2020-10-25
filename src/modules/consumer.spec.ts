@@ -1,10 +1,18 @@
-import { connect, Channel as AmqpChannel, Replies } from 'amqplib';
+import {
+  connect, Channel as AmqpChannel, Replies, ConsumeMessageFields,
+} from 'amqplib';
 import MessageHelper from '../helpers/message_helper';
 import Consumer from './consumer';
 import ConsumerError from '../errors/ConsumerError';
 import { consumerOptions } from '../interfaces/IConsumer';
 
-const messageReceived = { content: 'test' };
+const fields = {} as ConsumeMessageFields;
+
+const messageReceived = {
+  content: Buffer.from('test'),
+  fields,
+};
+
 jest.mock('amqplib', () => ({
   connect: () => ({
     createChannel: () => ({
@@ -30,7 +38,9 @@ jest.mock('../utils/debugger_logger');
 
 describe('consume', () => {
   const createMockedConnection = connect as jest.MockedFunction<typeof connect>;
+
   let mockedChannel: AmqpChannel;
+
   const options: consumerOptions = {
     queue: {
       name: 'test',
@@ -40,6 +50,7 @@ describe('consume', () => {
     prefetch: 0,
     consumerTag: 'test',
   };
+
   describe('when message is consumed', () => {
     const callback: jest.MockedFunction<typeof Function> = jest.fn()
       .mockResolvedValueOnce('firs call')
@@ -86,16 +97,21 @@ describe('consume', () => {
         expect(MessageHelper.bufferToJson).toHaveBeenCalledWith(messageReceived.content);
       });
 
-      it('should call callback function', () => {
-        expect(callback).toHaveBeenCalled();
+      it('should call callback function with message content and fields', () => {
+        expect(callback).toHaveBeenCalledWith(
+          MessageHelper.bufferToJson(messageReceived.content),
+          messageReceived.fields,
+        );
       });
 
       it('should call channel.ack', () => {
         expect(mockedChannel.ack).toHaveBeenCalledWith(messageReceived);
       });
     });
+
     describe('and promise rejects', () => {
       let consumerRejected: Promise<Replies.Consume>;
+
       beforeAll(async () => {
         consumerRejected = consumer.consume(callback);
       });

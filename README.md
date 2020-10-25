@@ -79,7 +79,7 @@ const bindings = [
 ];
 
 (async() => {
-  await broker.consume({ queue, bindings }, (message) => {
+  await broker.consume({ queue, bindings }, (message, /* fields */) => {
     // do something
     // throw an error to reject message
   });

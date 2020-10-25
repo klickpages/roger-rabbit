@@ -1,4 +1,6 @@
-import { Channel, Replies, ConsumeMessage } from 'amqplib';
+import {
+  Channel, Replies, ConsumeMessage, ConsumeMessageFields,
+} from 'amqplib';
 import { defaultsDeep } from 'lodash';
 import Queue from './queue';
 import MessageHelper from '../helpers/message_helper';
@@ -22,6 +24,7 @@ export default class Consumer {
 
   public consume(callback: Function): Promise<Replies.Consume> {
     const { queue: { name: queueName } } = this.options;
+
     return this.channel.consume(queueName,
       (messageReceived) => this.onConsumeMessage(
         messageReceived, callback,
@@ -44,10 +47,14 @@ export default class Consumer {
 
     if (messageReceived) {
       debuggerLogger({ context: this.context, message: 'Consumer started.' });
+
       try {
+        const fields = messageReceived.fields as ConsumeMessageFields;
+
         message = MessageHelper.bufferToJson(messageReceived.content);
 
-        await callback(message);
+        await callback(message, fields);
+
         debuggerLogger({
           context: this.context,
           message: 'Message was consumed.',
@@ -56,6 +63,7 @@ export default class Consumer {
             message,
           },
         });
+
         this.channel.ack(messageReceived);
       } catch (error) {
         debuggerLogger({
@@ -66,12 +74,14 @@ export default class Consumer {
             message,
           },
         });
+
         this.channel.reject(
           messageReceived,
           this.options.queue.options.requeue === false
             ? this.options.queue.options.requeue
             : true,
         );
+
         throw new ConsumerError({
           message: 'Error on consume message',
           error,
