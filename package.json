@@ -1,6 +1,6 @@
 {
   "name": "@klicksite/roger-rabbit",
-  "version": "5.3.4",
+  "version": "5.3.5",
   "author": "Klickpages <accounts@klickpages.com.br>",
   "license": "MIT",
   "description": "amqplib wrapper",
