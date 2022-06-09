@@ -1,9 +1,8 @@
 import {
-  connect, Channel as AmqpChannel, Replies, ConsumeMessageFields,
+  connect, Channel as AmqpChannel, ConsumeMessageFields,
 } from 'amqplib';
 import MessageHelper from '../helpers/message_helper';
 import Consumer from './consumer';
-import ConsumerError from '../errors/ConsumerError';
 import { consumerOptions } from '../interfaces/IConsumer';
 
 const fields = {} as ConsumeMessageFields;
@@ -110,16 +109,8 @@ describe('consume', () => {
     });
 
     describe('and promise rejects', () => {
-      let consumerRejected: Promise<Replies.Consume>;
-
       beforeAll(async () => {
-        consumerRejected = consumer.consume(callback);
-      });
-
-      it('should throw ConsumerError', async () => {
-        await expect(consumerRejected).rejects.toThrow(new ConsumerError({
-          message: 'Error on consume message',
-        }));
+        await consumer.consume(callback);
       });
 
       it('should call MessageHelper.bufferToJson', () => {

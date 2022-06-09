@@ -5,7 +5,6 @@ import { defaultsDeep } from 'lodash';
 import Queue from './queue';
 import MessageHelper from '../helpers/message_helper';
 import debuggerLogger from '../utils/debugger_logger';
-import ConsumerError from '../errors/ConsumerError';
 import { consumerOptions } from '../interfaces/IConsumer';
 
 export default class Consumer {
@@ -81,11 +80,6 @@ export default class Consumer {
             ? this.options.queue.options.requeue
             : true,
         );
-
-        throw new ConsumerError({
-          message: 'Error on consume message',
-          error,
-        });
       }
     }
   }
